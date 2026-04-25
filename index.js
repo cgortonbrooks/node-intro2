@@ -3,6 +3,9 @@ const mysql = require('mysql2')
 const app = express()
 const PORT = 3000
 
+app.use(express.static('public'))
+app.use(express.urlencoded({extended: true}))
+
 const db = mysql.createConnection({
     host: '66.198.240.46',
     user: 'bfzhiwes_node-intro-user',
@@ -24,6 +27,16 @@ app.get('/', (req, res) => {
 
 app.get('/bye', (req, res) => {
     res.send('Buh bye')
+})
+
+app.post('/add-student', (req, res) => {
+    let {name, grade} = req.body
+    db.query(`INSERT INTO students (name, grade) values ("${name}", ${grade})`, 
+        (err, results) => {
+            if (err) return res.status(500).send(err)
+            res.redirect('/students')
+        }
+    )
 })
 
 app.listen(PORT, () => {
